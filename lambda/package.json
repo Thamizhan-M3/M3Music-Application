@@ -1,0 +1,12 @@
+{
+  "name": "s3-upload-processor",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "mongodb": "^6.17.0",
+    "@aws-sdk/client-secrets-manager": "^3.840.0",
+    "@aws-sdk/client-dynamodb": "^3.840.0",
+    "@aws-sdk/lib-dynamodb": "^3.840.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.840.0"
+  }
+}
