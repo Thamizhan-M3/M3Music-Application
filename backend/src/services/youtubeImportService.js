@@ -341,7 +341,7 @@ export const processYoutubeImport = async (job, updateProgress) => {
         console.log('[YouTube Service] Uploading optimized artwork to R2...');
         const artworkFilename = `${videoId}_artwork.jpg`;
         const artworkUpload = await uploadFromBuffer(artworkBuffer, artworkFilename, 'artwork');
-        artworkUrl = artworkUpload.url || artworkUpload.secure_url || thumbnailUrl;
+        artworkUrl = artworkUpload.key || artworkUpload.url || artworkUpload.secure_url || thumbnailUrl;
         thumbnailUrl = artworkUrl;
       } catch (artworkErr) {
         console.error('[YouTube Service] Failed to process/upload artwork. Using original URL.', artworkErr);
@@ -354,7 +354,7 @@ export const processYoutubeImport = async (job, updateProgress) => {
         const artworkBuffer = await generateGradientPlaceholder();
         const artworkFilename = `${videoId}_artwork.jpg`;
         const artworkUpload = await uploadFromBuffer(artworkBuffer, artworkFilename, 'artwork');
-        artworkUrl = artworkUpload.url || artworkUpload.secure_url || '';
+        artworkUrl = artworkUpload.key || artworkUpload.url || artworkUpload.secure_url || '';
         thumbnailUrl = artworkUrl;
       } catch (gradErr) {
         console.error('[YouTube Service] Gradient placeholder generation failed:', gradErr);
@@ -367,7 +367,7 @@ export const processYoutubeImport = async (job, updateProgress) => {
 
     const song = await SongCache.create({
       cloudinaryId: audioUpload.key, // keeping backward compatibility
-      url: audioUpload.url,
+      url: audioUpload.key,
       title: customMetadata.title,
       artist: customMetadata.artist || 'Unknown Artist',
       singer: customMetadata.singer || customMetadata.artist || 'Unknown Artist',

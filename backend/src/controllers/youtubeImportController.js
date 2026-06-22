@@ -1,11 +1,17 @@
 import queueManager from '../services/importQueue.js';
 import { fetchYoutubeMetadata, getYoutubeVideoId } from '../services/youtubeImportService.js';
 import SongCache from '../models/SongCache.js';
+import { toClientSong } from '../utils/mediaUrls.js';
 
 // Escape regex special characters
 const escapeRegExp = (string) => {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 };
+
+const toClientImportJob = (job) => ({
+  ...job,
+  song: job.song ? toClientSong(job.song) : job.song
+});
 
 /**
  * @desc    Validate URL and inspect YouTube video metadata
@@ -50,7 +56,7 @@ export const inspectYoutubeVideo = async (req, res) => {
       metadata,
       duplicate: !!duplicate,
       duplicateReason,
-      existingSong: duplicate || null
+      existingSong: duplicate ? toClientSong(duplicate) : null
     });
   } catch (error) {
     console.error('[YouTube Controller] Inspection failed:', error);
@@ -78,7 +84,7 @@ export const startYoutubeImport = async (req, res) => {
     res.status(202).json({
       message: 'Import job successfully queued',
       jobId: job.id,
-      job
+      job: toClientImportJob(job)
     });
   } catch (error) {
     console.error('[YouTube Controller] Import queue failed:', error);
@@ -94,7 +100,7 @@ export const startYoutubeImport = async (req, res) => {
 export const getImportJobs = async (req, res) => {
   try {
     const jobs = queueManager.getJobs();
-    res.json(jobs);
+    res.json(jobs.map(toClientImportJob));
   } catch (error) {
     res.status(500).json({ message: 'Failed to retrieve import jobs', error: error.message });
   }
@@ -111,7 +117,7 @@ export const getImportJobDetails = async (req, res) => {
     if (!job) {
       return res.status(404).json({ message: 'Import job not found' });
     }
-    res.json(job);
+    res.json(toClientImportJob(job));
   } catch (error) {
     res.status(500).json({ message: 'Failed to retrieve job details', error: error.message });
   }

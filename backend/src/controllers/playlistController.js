@@ -1,5 +1,6 @@
 import Playlist from '../models/Playlist.js';
 import SongCache from '../models/SongCache.js';
+import { toClientPlaylist } from '../utils/mediaUrls.js';
 
 // @desc    Get all playlists for logged in user
 // @route   GET /api/playlists
@@ -7,7 +8,7 @@ import SongCache from '../models/SongCache.js';
 export const getPlaylists = async (req, res) => {
   try {
     const playlists = await Playlist.find({ userId: req.user._id }).sort({ pinned: -1, updatedAt: -1 });
-    res.json(playlists);
+    res.json(playlists.map(toClientPlaylist));
   } catch (error) {
     res.status(500).json({ message: 'Error fetching playlists' });
   }
@@ -25,7 +26,7 @@ export const getPlaylistById = async (req, res) => {
       return res.status(404).json({ message: 'Playlist not found' });
     }
     
-    res.json(playlist);
+    res.json(toClientPlaylist(playlist));
   } catch (error) {
     res.status(500).json({ message: 'Error fetching playlist' });
   }
@@ -46,7 +47,7 @@ export const createPlaylist = async (req, res) => {
       totalSongs: 0,
       totalDuration: 0
     });
-    res.status(201).json(playlist);
+    res.status(201).json(toClientPlaylist(playlist));
   } catch (error) {
     res.status(500).json({ message: 'Error creating playlist' });
   }
@@ -68,7 +69,7 @@ export const updatePlaylist = async (req, res) => {
     if (liked !== undefined) playlist.liked = liked;
 
     await playlist.save();
-    res.json(playlist);
+    res.json(toClientPlaylist(playlist));
   } catch (error) {
     res.status(500).json({ message: 'Error updating playlist' });
   }
@@ -113,7 +114,7 @@ export const addSongToPlaylist = async (req, res) => {
     }
     
     const updated = await Playlist.findById(playlistId).populate('songs');
-    res.json(updated);
+    res.json(toClientPlaylist(updated));
   } catch (error) {
     res.status(500).json({ message: 'Error adding song to playlist' });
   }
@@ -141,7 +142,7 @@ export const removeSongFromPlaylist = async (req, res) => {
     }
 
     const updated = await Playlist.findById(playlistId).populate('songs');
-    res.json(updated);
+    res.json(toClientPlaylist(updated));
   } catch (error) {
     res.status(500).json({ message: 'Error removing song from playlist' });
   }
@@ -163,7 +164,7 @@ export const reorderSongs = async (req, res) => {
 
     await playlist.save();
     const updated = await Playlist.findById(playlistId).populate('songs');
-    res.json(updated);
+    res.json(toClientPlaylist(updated));
   } catch (error) {
     res.status(500).json({ message: 'Error reordering songs' });
   }
@@ -183,7 +184,7 @@ export const updatePlaylistCover = async (req, res) => {
     playlist.coverImage = coverImage;
     await playlist.save();
     
-    res.json(playlist);
+    res.json(toClientPlaylist(playlist));
   } catch (error) {
     res.status(500).json({ message: 'Error updating playlist cover' });
   }

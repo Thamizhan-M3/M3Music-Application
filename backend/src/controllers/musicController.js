@@ -12,6 +12,7 @@ import {
 } from '../services/cloudinaryService.js';
 
 import { extractMetadata } from '../services/metadataService.js';
+import { resolveMediaUrl, toClientSong, toClientSongs } from '../utils/mediaUrls.js';
 
 import {
   GetObjectCommand,
@@ -33,7 +34,7 @@ export const uploadMusic = async (req, res) => {
     const addedSongs = [];
 
     for (const file of req.files) {
-      const { key, url } = await uploadFileBuffer(file.buffer, file.originalname, 'audio');
+      const { key } = await uploadFileBuffer(file.buffer, file.originalname, 'audio');
 
       const metadata = await extractMetadata(file.buffer, {
         mimeType: file.mimetype,
@@ -54,12 +55,12 @@ export const uploadMusic = async (req, res) => {
 
       if (artworkBuffer) {
         const result = await uploadFromBuffer(artworkBuffer, `${file.originalname}-artwork.jpg`, 'artwork');
-        artworkUrl = result.url;
+        artworkUrl = result.key;
       }
 
       const song = await SongCache.create({
         cloudinaryId: key,
-        url,
+        url: key,
         title,
         artist,
         musicDirector,
@@ -70,7 +71,7 @@ export const uploadMusic = async (req, res) => {
         uploadedBy: req.user._id
       });
 
-      addedSongs.push(song);
+      addedSongs.push(toClientSong(song));
     }
 
     res.status(201).json({ message: 'Uploaded', songs: addedSongs });
@@ -86,7 +87,7 @@ export const uploadMusic = async (req, res) => {
 //////////////////////////////////////////////////////
 export const getSongs = async (req, res) => {
   const songs = await SongCache.find().sort({ createdAt: -1 });
-  res.json(songs);
+  res.json(toClientSongs(songs));
 };
 
 //////////////////////////////////////////////////////
@@ -102,7 +103,7 @@ export const searchSongs = async (req, res) => {
     ]
   });
 
-  res.json(songs);
+  res.json(toClientSongs(songs));
 };
 
 //////////////////////////////////////////////////////
@@ -117,7 +118,7 @@ export const updateSong = async (req, res) => {
   song.artist = req.body.artist || song.artist;
 
   const updated = await song.save();
-  res.json(updated);
+  res.json(toClientSong(updated));
 };
 
 //////////////////////////////////////////////////////
@@ -201,7 +202,7 @@ export const streamSong = async (req, res) => {
 //////////////////////////////////////////////////////
 export const getLikedSongs = async (req, res) => {
   const likes = await Like.find({ userId: req.user._id }).populate('songId');
-  res.json(likes.map(l => l.songId));
+  res.json(toClientSongs(likes.map(l => l.songId)));
 };
 
 export const toggleLikeSong = async (req, res) => {
@@ -245,7 +246,7 @@ export const filterSongs = async (req, res) => {
   if (req.query.genre) query.genre = req.query.genre;
 
   const songs = await SongCache.find(query);
-  res.json(songs);
+  res.json(toClientSongs(songs));
 };
 
 //////////////////////////////////////////////////////
@@ -253,17 +254,17 @@ export const filterSongs = async (req, res) => {
 //////////////////////////////////////////////////////
 export const getSongsByArtist = async (req, res) => {
   const songs = await SongCache.find({ artist: req.params.artist });
-  res.json(songs);
+  res.json(toClientSongs(songs));
 };
 
 export const getSongsByAlbum = async (req, res) => {
   const songs = await SongCache.find({ album: req.params.album });
-  res.json(songs);
+  res.json(toClientSongs(songs));
 };
 
 export const getSongsByGenre = async (req, res) => {
   const songs = await SongCache.find({ genre: req.params.genre });
-  res.json(songs);
+  res.json(toClientSongs(songs));
 };
 
 //////////////////////////////////////////////////////
@@ -272,7 +273,7 @@ export const getSongsByGenre = async (req, res) => {
 export const uploadArtwork = async (req, res) => {
   try {
     const result = await uploadFromBuffer(req.file.buffer, 'art.jpg', 'artwork');
-    res.json({ url: result.url });
+    res.json({ url: resolveMediaUrl(result.key) });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
