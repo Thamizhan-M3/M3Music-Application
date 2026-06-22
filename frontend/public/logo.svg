@@ -1,0 +1,74 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="greenGlass" x1="180" y1="180" x2="820" y2="820" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#C7FF5E"/>
+      <stop offset="35%" stop-color="#3DFF72"/>
+      <stop offset="70%" stop-color="#00C853"/>
+      <stop offset="100%" stop-color="#007A33"/>
+    </linearGradient>
+
+    <linearGradient id="glassHighlight" x1="250" y1="180" x2="780" y2="780" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.9)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.05)"/>
+    </linearGradient>
+
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="18" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="glassShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="20" flood-color="#00FF66" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#glow)">
+    <!-- M Shape -->
+    <path d="M220 760V280C220 245 245 220 280 220H310C330 220 348 228 362 242L500 385L640 242C654 228 672 220 692 220H720C755 220 780 245 780 280V760"
+      stroke="url(#greenGlass)"
+      stroke-width="72"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      filter="url(#glassShadow)"/>
+
+    <!-- Music Note Stem -->
+    <path d="M590 390V640"
+      stroke="url(#greenGlass)"
+      stroke-width="56"
+      stroke-linecap="round"/>
+
+    <!-- Music Note Circle -->
+    <circle cx="535" cy="690" r="85"
+      fill="url(#greenGlass)"
+      filter="url(#glassShadow)"/>
+
+    <!-- 3 Shape -->
+    <path d="M710 300H850C900 300 930 330 930 380C930 430 900 460 850 460H760C830 460 910 500 910 590C910 690 840 760 740 760H640"
+      stroke="url(#greenGlass)"
+      stroke-width="72"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      filter="url(#glassShadow)"/>
+
+    <!-- Glass highlights -->
+    <path d="M275 260C340 260 390 320 450 380"
+      stroke="white"
+      stroke-opacity="0.55"
+      stroke-width="14"
+      stroke-linecap="round"/>
+
+    <path d="M720 330H835"
+      stroke="white"
+      stroke-opacity="0.45"
+      stroke-width="12"
+      stroke-linecap="round"/>
+
+    <ellipse cx="510" cy="655" rx="42" ry="18"
+      fill="white"
+      fill-opacity="0.28"
+      transform="rotate(-18 510 655)"/>
+  </g>
+</svg>
