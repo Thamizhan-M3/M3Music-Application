@@ -21,7 +21,7 @@ env:
   ECR_REPOSITORY: ${{ vars.ECR_BACKEND_REPOSITORY }}
   IMAGE_NAME: m3music-backend
   WORKING_DIR: backend
-  DOCKER_CONTEXT: backend
+  BUILD_CONTEXT: backend
   DOCKERFILE_PATH: backend/Dockerfile
 
 jobs:
@@ -102,7 +102,7 @@ jobs:
           fetch-depth: 0
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         with:
           projectBaseDir: ./backend
           args: >
@@ -150,19 +150,16 @@ jobs:
           role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v2
-
       - name: Fix Docker Context
         run: |
-          mkdir -p ~/.docker
-          cat > ~/.docker/config.json <<'EOF'
-          {
-            "currentContext": "default"
-          }
-          EOF
-          docker context ls || true
+          unset DOCKER_CONTEXT
+          rm -f ~/.docker/config.json
+          docker context use default
+          docker context ls
           docker info
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build Image
         run: |

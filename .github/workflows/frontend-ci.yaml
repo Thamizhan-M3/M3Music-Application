@@ -21,7 +21,7 @@ env:
   ECR_REPOSITORY: ${{ vars.ECR_FRONTEND_REPOSITORY }}
   IMAGE_NAME: m3music-frontend
   WORKING_DIR: frontend
-  DOCKER_CONTEXT: frontend
+  BUILD_CONTEXT: frontend
   DOCKERFILE_PATH: frontend/Dockerfile
 
 jobs:
@@ -102,7 +102,7 @@ jobs:
           fetch-depth: 0
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         with:
           projectBaseDir: ./frontend
           args: >
@@ -152,13 +152,10 @@ jobs:
 
       - name: Fix Docker Context
         run: |
-          mkdir -p ~/.docker
-          cat > ~/.docker/config.json <<'EOF'
-          {
-            "currentContext": "default"
-          }
-          EOF
-          docker context ls || true
+          unset DOCKER_CONTEXT
+          rm -f ~/.docker/config.json
+          docker context use default
+          docker context ls
           docker info
 
       - name: Login to Amazon ECR
@@ -212,7 +209,10 @@ jobs:
           name: image-frontend
 
       - name: Load Image
-        run: docker load -i image.tar
+        run: |
+          unset DOCKER_CONTEXT
+          docker context use default
+          docker load -i image.tar
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -220,17 +220,16 @@ jobs:
           role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Fix Docker Context
+        run: |
+          unset DOCKER_CONTEXT
+          rm -f ~/.docker/config.json
+          docker context use default
+          docker context ls
+          docker info
+
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Push Versioned Image
-        run: docker push "${{ needs.prepare.outputs.image }}"
-
-      - name: Push Latest Image
-        run: |
-          LATEST_IMAGE="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:latest"
-          docker tag "${{ needs.prepare.outputs.image }}" "$LATEST_IMAGE"
-          docker push "$LATEST_IMAGE"
 
   release:
     runs-on: ubuntu-latest
