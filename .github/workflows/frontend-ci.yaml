@@ -150,10 +150,16 @@ jobs:
           role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Force Docker Default Context
+      - name: Fix Docker Context
         run: |
-          docker context use default
-          docker context ls
+          mkdir -p ~/.docker
+          cat > ~/.docker/config.json <<'EOF'
+          {
+            "currentContext": "default"
+          }
+          EOF
+          docker context ls || true
+          docker info
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
@@ -198,7 +204,7 @@ jobs:
 
   push:
     runs-on: ubuntu-latest
-    needs: [prepare, trivy]
+    needs: [prepare, trivy, sonar, snyk]
 
     steps:
       - uses: actions/download-artifact@v4

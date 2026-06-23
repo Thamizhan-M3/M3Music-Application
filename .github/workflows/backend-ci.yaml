@@ -153,10 +153,16 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Force Docker Default Context
+      - name: Fix Docker Context
         run: |
-          docker context use default
-          docker context ls
+          mkdir -p ~/.docker
+          cat > ~/.docker/config.json <<'EOF'
+          {
+            "currentContext": "default"
+          }
+          EOF
+          docker context ls || true
+          docker info
 
       - name: Build Image
         run: |
@@ -198,7 +204,7 @@ jobs:
 
   push:
     runs-on: ubuntu-latest
-    needs: [prepare, trivy]
+    needs: [prepare, trivy, sonar, snyk]
 
     steps:
       - uses: actions/download-artifact@v4
