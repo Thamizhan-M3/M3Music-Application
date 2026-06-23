@@ -1,11 +1,12 @@
-FROM node:20-alpine as builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
 
 RUN apk add --no-cache python3 make g++ \
-    && npm install
+    && ln -sf /usr/bin/python3 /usr/bin/python \
+    && npm ci
 
 COPY . .
 
@@ -13,15 +14,21 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+ENV NODE_ENV=production
+
 COPY package*.json ./
 
-# Install Python here too for runtime
 RUN apk add --no-cache python3 \
-    && npm ci --only=production
+    && ln -sf /usr/bin/python3 /usr/bin/python \
+    && npm ci --omit=dev \
+    && npm cache clean --force
 
-COPY --from=builder /app .
+COPY --from=builder --chown=node:node /app/src ./src
+COPY --from=builder --chown=node:node /app/scripts ./scripts
 
-EXPOSE 5000
+USER node
+
+EXPOSE 10000
 
 CMD ["npm", "start"]
 

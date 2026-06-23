@@ -4,7 +4,7 @@ FROM node:20 AS build
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 
@@ -12,19 +12,22 @@ RUN npm run build
 
 
 # ---------- Stage 2: Serve ----------
-FROM nginx:alpine
+FROM nginxinc/nginx-unprivileged:1.27-alpine
 
-RUN apk add --no-cache gettext
+USER root
+RUN apk add --no-cache gettext \
+    && chown -R nginx:nginx /usr/share/nginx/html /etc/nginx/conf.d
+USER nginx
 
 # Copy built app
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build --chown=nginx:nginx /app/dist /usr/share/nginx/html
 
 # Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --chown=nginx:nginx nginx.conf /etc/nginx/conf.d/default.conf
 
 # Runtime env injection template
-COPY env.template.js /usr/share/nginx/html/env.template.js
+COPY --chown=nginx:nginx env.template.js /usr/share/nginx/html/env.template.js
 
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["/bin/sh", "-c", "envsubst < /usr/share/nginx/html/env.template.js > /usr/share/nginx/html/env.js && nginx -g 'daemon off;'"]

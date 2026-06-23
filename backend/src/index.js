@@ -32,8 +32,12 @@ app.use('/api/auth', authRoutes);
 app.use('/api/music', musicRoutes);
 app.use('/api/playlists', playlistRoutes);
 
-// Health check
-app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
+const healthResponse = (req, res) => res.status(200).json({ status: 'ok' });
+
+// Health checks
+app.get('/health', healthResponse);
+app.get('/healthz', healthResponse);
+app.get('/ready', healthResponse);
 
 // Error Handling Middleware
 app.use(notFound);
