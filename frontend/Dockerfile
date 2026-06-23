@@ -12,10 +12,11 @@ RUN npm run build
 
 
 # ---------- Stage 2: Serve ----------
-FROM nginxinc/nginx-unprivileged:1.27-alpine
+FROM nginxinc/nginx-unprivileged:stable-alpine
 
 USER root
-RUN apk add --no-cache gettext \
+RUN apk update && apk upgrade --no-cache \
+    && apk add --no-cache gettext \
     && chown -R nginx:nginx /usr/share/nginx/html /etc/nginx/conf.d
 USER nginx
 
