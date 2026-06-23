@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Pause, Clock, Heart, Music, Search, MoreVertical, Trash2 } from 'lucide-react';
+import { Play, Pause, Clock, Heart, Music, Search, MoreVertical } from 'lucide-react';
 import usePlayerStore from '../store/playerStore';
 import useLikedSongsStore from '../store/likedSongsStore';
 import useAuthStore from '../store/authStore';
 
 const LikedSongs = () => {
   const { likedSongs, fetchLikedSongs, toggleLike, loading } = useLikedSongsStore();
-  const { setQueue, currentSong, isPlaying, togglePlay } = usePlayerStore();
+  const { setQueue, currentSong, isPlaying } = usePlayerStore();
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {

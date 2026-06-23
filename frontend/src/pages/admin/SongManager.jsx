@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Music, Search, Edit2, Trash2, X, Image as ImageIcon, 
+  Music, Search, Edit2, Trash2, X,
   RefreshCw, Disc, User, Tag, Calendar, Save, Globe, 
-  BookOpen, Feather, HardDrive, Compass, Film, Trash, Upload
+  BookOpen, Feather, HardDrive, Compass, Trash, Upload
 } from 'lucide-react';
 import axiosInstance from '../../api/axiosInstance';
 
@@ -31,10 +31,6 @@ const SongManager = () => {
 
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    fetchSongs();
-  }, []);
-
   const fetchSongs = async () => {
     try {
       const res = await axiosInstance.get(`/api/music/songs`);
@@ -44,6 +40,11 @@ const SongManager = () => {
       setSongs([]);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchSongs();
+  }, []);
 
   const handleSync = async () => {
     try {

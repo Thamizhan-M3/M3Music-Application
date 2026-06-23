@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axiosInstance from '../api/axiosInstance';
 
-const usePlaylistStore = create((set, get) => ({
+const usePlaylistStore = create((set) => ({
   playlists: [],
   currentPlaylist: null,
   loading: false,
@@ -89,7 +89,7 @@ const usePlaylistStore = create((set, get) => ({
   reorderSongs: async (playlistId, startIndex, endIndex) => {
     try {
       const response = await axiosInstance.put(`/api/playlists/${playlistId}/reorder`, { startIndex, endIndex });
-      set((state) => ({
+      set(() => ({
         currentPlaylist: response.data
       }));
     } catch (error) {

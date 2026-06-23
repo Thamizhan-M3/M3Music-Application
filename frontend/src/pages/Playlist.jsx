@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, Clock, MoreVertical, Trash2, Edit2, Music, Heart, Plus, Search } from 'lucide-react';
+import { Play, Clock, Trash2, Edit2, Music, Heart, Search } from 'lucide-react';
 import usePlaylistStore from '../store/playlistStore';
 import usePlayerStore from '../store/playerStore';
 
@@ -9,7 +9,7 @@ const PlaylistPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { currentPlaylist, fetchPlaylistById, removeSongFromPlaylist, updatePlaylist, deletePlaylist, reorderSongs } = usePlaylistStore();
-  const { currentSong, isPlaying, playPlaylist, togglePlay } = usePlayerStore();
+  const { currentSong, isPlaying, playPlaylist } = usePlayerStore();
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState('');
   const [editDesc, setEditDesc] = useState('');
@@ -21,6 +21,7 @@ const PlaylistPage = () => {
 
   useEffect(() => {
     if (currentPlaylist) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEditTitle(currentPlaylist.title);
       setEditDesc(currentPlaylist.description || '');
     }

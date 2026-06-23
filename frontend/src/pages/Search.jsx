@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
-import useAuthStore from '../store/authStore';
 import usePlayerStore from '../store/playerStore';
-import { Search as SearchIcon, Play, Music, Mic2, Disc, Radio, Layout, MoreVertical, Heart } from 'lucide-react';
+import { Search as SearchIcon, Play, Music, Radio, MoreVertical, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SongContextMenu from '../components/SongContextMenu';
 import useLikedSongsStore from '../store/likedSongsStore';

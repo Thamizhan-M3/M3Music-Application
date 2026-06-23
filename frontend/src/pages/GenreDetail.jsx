@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import { motion } from 'framer-motion';
-import { Play, Pause, Clock, Heart, Music, Tag, Search, MoreVertical, Shuffle } from 'lucide-react';
+import { Play, Heart, Music, Tag, MoreVertical, Shuffle } from 'lucide-react';
 import usePlayerStore from '../store/playerStore';
 import useLikedSongsStore from '../store/likedSongsStore';
 
@@ -12,8 +12,6 @@ const GenreDetail = () => {
   const [loading, setLoading] = useState(true);
   const { setQueue, currentSong, isPlaying } = usePlayerStore();
   const { toggleLike, isLiked } = useLikedSongsStore();
-  const navigate = useNavigate();
-
   useEffect(() => {
     const fetchGenreSongs = async () => {
       try {

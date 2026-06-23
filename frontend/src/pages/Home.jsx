@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import { motion } from 'framer-motion';
 import { Play, Music, MoreVertical, Heart } from 'lucide-react';
 import usePlayerStore from '../store/playerStore';
-import useAuthStore from '../store/authStore';
 import useLikedSongsStore from '../store/likedSongsStore';
 import SongContextMenu from '../components/SongContextMenu';
 

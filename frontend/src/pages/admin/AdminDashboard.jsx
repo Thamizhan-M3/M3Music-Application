@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Users, Music, PlayCircle, TrendingUp, Clock, HardDrive, Disc,
-  Video, Loader, AlertCircle, X, CheckCircle, Edit2, Trash2,
-  Save, Play, FileText, ChevronRight
+  Users, Music, TrendingUp, Clock, HardDrive, Disc,
+  Video, Loader, AlertCircle, X, CheckCircle, Edit2,
+  Save
 } from 'lucide-react';
 import axiosInstance from '../../api/axiosInstance';
 import useAuthStore from '../../store/authStore';
@@ -17,6 +17,15 @@ const formatUploadDate = (value) => {
 
   return `${uploadDate.slice(0, 4)}-${uploadDate.slice(4, 6)}-${uploadDate.slice(6, 8)}`;
 };
+
+const ACTIVE_JOB_STATUSES = [
+  'pending',
+  'checking_duplicates',
+  'downloading',
+  'converting',
+  'uploading',
+  'saving'
+];
 
 const StatCard = ({ title, value, icon: Icon, color }) => (
   <div className="glass-card p-6 flex items-center gap-6">
@@ -66,17 +75,8 @@ const AdminDashboard = () => {
   // Active queue & history jobs
   const [importJobs, setImportJobs] = useState([]);
   const pollIntervalRef = useRef(null);
-  const ACTIVE_JOB_STATUSES = [
-    'pending',
-    'checking_duplicates',
-    'downloading',
-    'converting',
-    'uploading',
-    'saving'
-  ];
-
   // Fetch dashboard stats
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const [songsRes, usersRes, artistsRes, albumsRes, genresRes] = await Promise.all([
         axiosInstance.get(`/api/music/songs`),
@@ -102,10 +102,10 @@ const AdminDashboard = () => {
     } catch (err) {
       console.error('Failed to fetch stats', err);
     }
-  };
+  }, []);
 
   // Fetch import jobs
-  const fetchImportJobs = async () => {
+  const fetchImportJobs = useCallback(async () => {
     try {
       const res = await axiosInstance.get('/api/music/youtube/jobs');
       setImportJobs(toArray(res.data));
@@ -113,13 +113,14 @@ const AdminDashboard = () => {
       console.error('Failed to fetch import jobs', err);
       setImportJobs([]);
     }
-  };
+  }, []);
 
   // Initial load
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchStats();
     fetchImportJobs();
-  }, [token]);
+  }, [token, fetchStats, fetchImportJobs]);
 
   // Poll only when active jobs exist
   useEffect(() => {
@@ -149,7 +150,7 @@ const AdminDashboard = () => {
         pollIntervalRef.current = null;
       }
     };
-  }, [importJobs]);
+  }, [importJobs, fetchImportJobs]);
 
   // Inspect YouTube URL (Phase 1)
   const handleInspect = async (e) => {

@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axiosInstance from '../../api/axiosInstance';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, UserPlus, Search, Edit2, Trash2, Shield, User, Mail, Key, X, Check } from 'lucide-react';
-import useAuthStore from '../../store/authStore';
+import { UserPlus, Search, Edit2, Trash2, Shield, User, Mail, Key, X } from 'lucide-react';
 
 const UserManager = () => {
   const [users, setUsers] = useState([]);
@@ -16,10 +15,6 @@ const UserManager = () => {
     role: 'user'
   });
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
   const fetchUsers = async () => {
     try {
       const res = await axiosInstance.get(`/api/auth/users`);
@@ -28,6 +23,11 @@ const UserManager = () => {
       console.error('Failed to fetch users', err);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchUsers();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

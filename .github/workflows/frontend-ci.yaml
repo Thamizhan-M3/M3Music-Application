@@ -106,8 +106,8 @@ jobs:
         with:
           projectBaseDir: ./frontend
           args: >
-            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
-            -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -150,17 +150,20 @@ jobs:
           role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Reset Docker Context
+        run: docker context use default
+
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build Image
         run: |
           docker build \
-            -f "${DOCKERFILE_PATH}" \
+            -f frontend/Dockerfile \
             --label "org.opencontainers.image.revision=${{ github.sha }}" \
             --label "org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}" \
             -t "${{ needs.prepare.outputs.image }}" \
-            "${DOCKER_CONTEXT}"
+            ./frontend
 
       - name: Save Image
         run: docker save "${{ needs.prepare.outputs.image }}" -o image.tar

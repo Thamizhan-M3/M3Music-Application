@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axiosInstance from '../api/axiosInstance';
-import { motion } from 'framer-motion';
-import { Music, Disc, User, Tag, ChevronRight, Play } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
 
 import { ArtistCard, AlbumCard, GenreCard } from '../components/DiscoveryCards';
 
@@ -27,8 +25,6 @@ const Discovery = () => {
   const [albums, setAlbums] = useState([]);
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-
   useEffect(() => {
     const fetchData = async () => {
       try {

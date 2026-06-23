@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { UploadCloud, CheckCircle, XCircle, Music } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 

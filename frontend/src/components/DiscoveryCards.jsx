@@ -1,6 +1,5 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { Play, Music, User, Disc, Tag } from 'lucide-react';
+import { Play, User, Disc, Tag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const ArtistCard = ({ name, image }) => {

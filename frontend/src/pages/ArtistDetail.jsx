@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import { motion } from 'framer-motion';
-import { Play, Pause, Clock, Heart, Music, MoreVertical, Disc, Shuffle } from 'lucide-react';
+import { Play, Heart, Music, MoreVertical, Disc, Shuffle } from 'lucide-react';
 import usePlayerStore from '../store/playerStore';
 import useLikedSongsStore from '../store/likedSongsStore';
 
@@ -12,7 +12,7 @@ const ArtistDetail = () => {
   const { name } = useParams();
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { setQueue, currentSong, isPlaying, togglePlay } = usePlayerStore();
+  const { setQueue, currentSong } = usePlayerStore();
   const { toggleLike, isLiked } = useLikedSongsStore();
   const navigate = useNavigate();
 
