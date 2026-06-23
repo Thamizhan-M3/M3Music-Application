@@ -150,8 +150,10 @@ jobs:
           role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Reset Docker Context
-        run: docker context use default
+      - name: Force Docker Default Context
+        run: |
+          docker context use default
+          docker context ls
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2

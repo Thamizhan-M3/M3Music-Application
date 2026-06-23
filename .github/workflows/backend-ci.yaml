@@ -153,8 +153,10 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Reset Docker Context
-        run: docker context use default
+      - name: Force Docker Default Context
+        run: |
+          docker context use default
+          docker context ls
 
       - name: Build Image
         run: |
