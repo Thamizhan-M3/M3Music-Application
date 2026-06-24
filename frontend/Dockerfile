@@ -16,9 +16,7 @@ FROM nginxinc/nginx-unprivileged:stable-alpine
 
 USER root
 RUN apk update && apk upgrade --no-cache \
-    && apk add --no-cache gettext \
-    && chown -R nginx:nginx /usr/share/nginx/html /etc/nginx/conf.d
-USER 101
+    && apk add --no-cache gettext
 
 # Copy built app
 COPY --from=build --chown=nginx:nginx /app/dist /usr/share/nginx/html
@@ -28,6 +26,12 @@ COPY --chown=nginx:nginx nginx.conf /etc/nginx/conf.d/default.conf
 
 # Runtime env injection template
 COPY --chown=nginx:nginx env.template.js /usr/share/nginx/html/env.template.js
+
+RUN touch /usr/share/nginx/html/env.js \
+    && chown -R nginx:nginx /usr/share/nginx/html /etc/nginx/conf.d /var/cache/nginx /var/run /var/log/nginx /tmp \
+    && chmod -R u+rwX /usr/share/nginx/html /etc/nginx/conf.d /var/cache/nginx /var/run /var/log/nginx /tmp
+
+USER 101
 
 EXPOSE 8080
 

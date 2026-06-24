@@ -27,17 +27,18 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
 }
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/music', musicRoutes);
-app.use('/api/playlists', playlistRoutes);
-
 const healthResponse = (req, res) => res.status(200).json({ status: 'ok' });
+const readyResponse = (req, res) => res.status(200).json({ status: 'ready' });
 
 // Health checks
 app.get('/health', healthResponse);
 app.get('/healthz', healthResponse);
-app.get('/ready', healthResponse);
+app.get('/ready', readyResponse);
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/music', musicRoutes);
+app.use('/api/playlists', playlistRoutes);
 
 // Error Handling Middleware
 app.use(notFound);
