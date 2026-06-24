@@ -18,7 +18,7 @@ USER root
 RUN apk update && apk upgrade --no-cache \
     && apk add --no-cache gettext \
     && chown -R nginx:nginx /usr/share/nginx/html /etc/nginx/conf.d
-USER nginx
+USER 101
 
 # Copy built app
 COPY --from=build --chown=nginx:nginx /app/dist /usr/share/nginx/html
