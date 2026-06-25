@@ -1,4 +1,3 @@
-# ---------- Stage 1: Build ----------
 FROM node:20 AS build
 
 WORKDIR /app
@@ -11,20 +10,16 @@ COPY . .
 RUN npm run build
 
 
-# ---------- Stage 2: Serve ----------
 FROM nginxinc/nginx-unprivileged:stable-alpine
 
 USER root
 RUN apk update && apk upgrade --no-cache \
     && apk add --no-cache gettext
 
-# Copy built app
 COPY --from=build --chown=nginx:nginx /app/dist /usr/share/nginx/html
 
-# Copy custom nginx config
 COPY --chown=nginx:nginx nginx.conf /etc/nginx/conf.d/default.conf
 
-# Runtime env injection template
 COPY --chown=nginx:nginx env.template.js /usr/share/nginx/html/env.template.js
 
 RUN touch /usr/share/nginx/html/env.js \
